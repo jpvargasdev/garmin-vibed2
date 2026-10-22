@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Garmin Profile Dashboard</title>
+  <meta name="description" content="Your Garmin Connect profile, daily health metrics, sleep, activities and devices.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="identity">
+      <img id="avatar" class="avatar" alt="" hidden>
+      <div>
+        <h1 id="name">Garmin Dashboard</h1>
+        <p id="subtitle" class="muted">Connect your Garmin token to load your profile.</p>
+      </div>
+    </div>
+    <div class="controls">
+      <label>Day <input type="date" id="day"></label>
+      <label>Trend
+        <select id="range">
+          <option value="7">7 days</option>
+          <option value="30" selected>30 days</option>
+          <option value="90">90 days</option>
+        </select>
+      </label>
+      <button id="refresh" type="button">Refresh</button>
+      <button id="open-settings" type="button" class="ghost">Settings</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <div id="banner" class="banner" hidden></div>
+
+    <section class="kpis" id="kpis" aria-label="Daily summary"></section>
+
+    <div class="grid">
+      <section class="card span-2">
+        <h2>Heart rate</h2>
+        <p class="caption" id="hr-caption"></p>
+        <div id="hr-chart"></div>
+      </section>
+
+      <section class="card">
+        <h2>Profile</h2>
+        <dl id="profile" class="facts"></dl>
+      </section>
+
+      <section class="card">
+        <h2>Body Battery</h2>
+        <p class="caption" id="bb-caption"></p>
+        <div id="bb-chart"></div>
+      </section>
+
+      <section class="card">
+        <h2>Stress</h2>
+        <p class="caption" id="stress-caption"></p>
+        <div id="stress-chart"></div>
+      </section>
+
+      <section class="card">
+        <h2>Sleep</h2>
+        <div id="sleep-head" class="headline"></div>
+        <div id="sleep-chart"></div>
+      </section>
+
+      <section class="card">
+        <h2>Recovery</h2>
+        <dl id="recovery" class="facts"></dl>
+      </section>
+
+      <section class="card span-2">
+        <h2>Steps</h2>
+        <p class="caption" id="steps-caption"></p>
+        <div id="steps-chart"></div>
+      </section>
+
+      <section class="card">
+        <h2>Weight</h2>
+        <p class="caption" id="weight-caption"></p>
+        <div id="weight-chart"></div>
+      </section>
+
+      <section class="card span-3">
+        <h2>Recent activities</h2>
+        <div class="table-wrap"><table id="activities"></table></div>
+      </section>
+
+      <section class="card span-2">
+        <h2>Personal records</h2>
+        <div class="table-wrap"><table id="records"></table></div>
+      </section>
+
+      <section class="card">
+        <h2>Devices</h2>
+        <ul id="devices" class="devices"></ul>
+      </section>
+
+      <section class="card span-3">
+        <h2>All data</h2>
+        <p class="caption">Every response returned by Garmin for this view, unedited.</p>
+        <div id="raw"></div>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="settings">
+    <form method="dialog" id="settings-form">
+      <h2>Settings</h2>
+      <label>Garmin token
+        <input type="password" id="token" autocomplete="off" spellcheck="false" placeholder="Paste your token" required>
+      </label>
+      <p class="hint">Saved only in this browser (localStorage) and sent only to Garmin, or to your relay if you set one.</p>
+      <label>API relay URL <span class="muted">(optional)</span>
+        <input type="url" id="relay" placeholder="https://garmin-proxy.you.workers.dev">
+      </label>
+      <p class="hint">Leave empty to call Garmin directly. If the browser blocks that (CORS), deploy the Cloudflare Worker in <code>worker/</code> and paste its URL here.</p>
+      <div class="dialog-actions">
+        <button type="button" id="forget" class="ghost">Forget token</button>
+        <button value="cancel" class="ghost" formnovalidate>Cancel</button>
+        <button value="save" id="save">Save &amp; load</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
