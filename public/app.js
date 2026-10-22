@@ -1,13 +1,6 @@
 import { lineChart, barChart, stackedBar } from './charts.js';
 
 const $ = (id) => document.getElementById(id);
-const store = {
-  get(k) { try { return localStorage.getItem(k) || ''; } catch { return ''; } },
-  set(k, v) { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch { /* storage unavailable */ } },
-};
-
-const GARMIN_API = 'https://connectapi.garmin.com';
-const config = { relay: '', token: '' };
 const raw = new Map(); // label -> { path, ok, data }
 let units = 'metric';
 let rerenders = [];
@@ -37,10 +30,9 @@ const titleCase = (s) => String(s || '').replace(/_/g, ' ').toLowerCase().replac
 // ---------- API ----------
 
 async function api(label, path) {
-  // Direct calls send the token as a Bearer header; the optional relay takes it in X-Garmin-Token.
-  const headers = config.relay ? { 'X-Garmin-Token': config.token } : { Authorization: `Bearer ${config.token}` };
+  // The local server (server.js) adds the token from .env and forwards to Garmin.
   try {
-    const res = await fetch(`${config.relay || GARMIN_API}/${path}`, { headers });
+    const res = await fetch(`api/garmin/${path}`);
     const text = await res.text();
     let data;
     try { data = text ? JSON.parse(text) : null; } catch { data = text; }
@@ -49,9 +41,7 @@ async function api(label, path) {
     return data;
   } catch (err) {
     if (!err.status) {
-      err.message = config.relay
-        ? `Could not reach the relay (${err.message}).`
-        : 'The browser blocked the request to Garmin (CORS). Garmin does not allow direct calls from web pages — add an API relay URL in Settings.';
+      err.message = `Could not reach the local server (${err.message}). Is \`npm start\` running?`;
       raw.set(label, { path, ok: false, status: 0, data: { error: err.message } });
     }
     throw err;
@@ -59,13 +49,6 @@ async function api(label, path) {
 }
 
 const settle = async (p) => { try { return await p; } catch { return null; } };
-
-function loadConfig() {
-  config.token = store.get('garminToken');
-  config.relay = store.get('relayUrl');
-}
-
-const ready = () => Boolean(config.token);
 
 // ---------- rendering helpers ----------
 
@@ -280,7 +263,6 @@ function renderRaw() {
 // ---------- load ----------
 
 async function load() {
-  if (!ready()) { $('settings').showModal(); return; }
   const day = $('day').value;
   const range = Number($('range').value);
   const start = addDays(day, -(range - 1));
@@ -298,8 +280,7 @@ async function load() {
     if (!social?.displayName) {
       const first = [...raw.values()][0]?.data;
       const status = [...raw.values()][0]?.status;
-      banner(`<strong>Could not load your profile.</strong> ${esc(first?.error || 'Unknown error')}${status === 401 || status === 403 ? ' — the token may be invalid or expired.' : ''} Check <a href="#" id="banner-settings">Settings</a>.`);
-      $('banner-settings')?.addEventListener('click', (e) => { e.preventDefault(); $('settings').showModal(); });
+      banner(`<strong>Could not load your profile.</strong> ${esc(first?.error || 'Unknown error')}${status === 401 || status === 403 ? ' — the token may be invalid or expired. Update GARMIN_TOKEN in .env and restart the server.' : ''}`);
       renderRaw();
       return;
     }
@@ -350,26 +331,6 @@ async function load() {
 
 // ---------- wiring ----------
 
-function openSettings() {
-  $('token').value = config.token;
-  $('relay').value = config.relay;
-  $('settings').showModal();
-}
-
-$('settings-form').addEventListener('submit', (e) => {
-  if (e.submitter?.value !== 'save') return;
-  config.token = $('token').value.trim();
-  store.set('garminToken', config.token);
-  config.relay = $('relay').value.trim().replace(/\/+$/, '');
-  store.set('relayUrl', config.relay);
-  setTimeout(load);
-});
-$('forget').addEventListener('click', () => {
-  config.token = '';
-  store.set('garminToken', '');
-  $('token').value = '';
-});
-$('open-settings').addEventListener('click', openSettings);
 $('refresh').addEventListener('click', load);
 $('day').addEventListener('change', load);
 $('range').addEventListener('change', load);
@@ -382,5 +343,4 @@ window.addEventListener('resize', () => {
 
 $('day').value = isoDay(new Date());
 $('day').max = isoDay(new Date());
-loadConfig();
-if (ready()) load(); else openSettings();
+load();

@@ -1,39 +1,35 @@
 # garmin-vibed2
 
-A simple static web app that shows your Garmin Connect profile: daily summary,
-heart rate, Body Battery, stress, sleep, HRV / training readiness, steps and
-weight trends, recent activities, personal records, devices, and every raw API
+A local dashboard for your Garmin Connect profile: daily summary, heart rate,
+Body Battery, stress, sleep, HRV / training readiness, steps and weight
+trends, recent activities, personal records, devices, and every raw API
 response.
 
-No build step, no backend, no dependencies — just `public/`.
+A tiny Node server (no dependencies) serves the page and forwards requests to
+Garmin, adding your token from `.env`. The token never reaches the browser and
+is never committed (`.env` is in `.gitignore`).
 
-## Use it
+## Run it on your Mac
 
-1. Open the GitHub Pages site: <https://jpvargasdev.github.io/garmin-vibed2/>
-2. Click **Settings**, paste your Garmin token, and **Save & load**.
-
-The token is stored only in your browser's `localStorage` and sent only to
-Garmin (or to your relay, if you set one). **Forget token** removes it.
-
-### If the browser blocks the request (CORS)
-
-Garmin's API does not send CORS headers, so browsers may refuse direct calls
-from a web page. If the dashboard reports a CORS block, deploy the small
-Cloudflare Worker in [`worker/`](worker/README.md) and paste its URL in
-**Settings → API relay URL**.
-
-## Run locally
-
-Any static file server works:
+Requires Node 18+ (`brew install node` if you don't have it).
 
 ```sh
-npx serve public
-# or
-python3 -m http.server -d public 8000
+git clone https://github.com/jpvargasdev/garmin-vibed2.git
+cd garmin-vibed2
+cp .env.example .env
+open -e .env        # paste your token after GARMIN_TOKEN=
+npm start
 ```
 
-## Publishing
+Then open <http://localhost:5173>.
 
-`.github/workflows/pages.yml` deploys `public/` to GitHub Pages on every push
-to `main`. One-time setup: **Settings → Pages → Build and deployment → Source:
-GitHub Actions**.
+When the token expires, replace it in `.env` and restart `npm start`.
+
+## Configuration (`.env`)
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `GARMIN_TOKEN` | — | Your Garmin access token (required) |
+| `PORT` | `5173` | Local port |
+| `GARMIN_API_BASE` | `https://connectapi.garmin.com` | Garmin API host |
+| `GARMIN_AUTH_SCHEME` | `Bearer` | Prefix for the `Authorization` header |
