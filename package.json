@@ -1,0 +1,13 @@
+{
+  "name": "garmin-vibed2",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local dashboard for your Garmin Connect profile data",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

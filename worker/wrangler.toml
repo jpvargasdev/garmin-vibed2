@@ -1,6 +1,0 @@
-name = "garmin-proxy"
-main = "garmin-proxy.js"
-compatibility_date = "2026-09-01"
-
-[vars]
-ALLOWED_ORIGIN = "https://jpvargasdev.github.io"

@@ -226,18 +226,4 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   font-size: 0.78rem;
 }
 
-dialog {
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--surface-1);
-  color: var(--text-primary);
-  width: min(480px, calc(100vw - 32px));
-  padding: 20px;
-}
-dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
-dialog label { display: grid; gap: 4px; margin-top: 12px; font-size: 0.88rem; }
-dialog h2 { font-size: 1.1rem; }
-.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
-.dialog-actions #forget { margin-right: auto; }
-
 .skeleton { color: var(--muted); }

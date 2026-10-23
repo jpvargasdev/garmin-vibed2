@@ -13,7 +13,7 @@
       <img id="avatar" class="avatar" alt="" hidden>
       <div>
         <h1 id="name">Garmin Dashboard</h1>
-        <p id="subtitle" class="muted">Connect your Garmin token to load your profile.</p>
+        <p id="subtitle" class="muted">Loading your profile…</p>
       </div>
     </div>
     <div class="controls">
@@ -26,7 +26,6 @@
         </select>
       </label>
       <button id="refresh" type="button">Refresh</button>
-      <button id="open-settings" type="button" class="ghost">Settings</button>
     </div>
   </header>
 
@@ -104,25 +103,6 @@
       </section>
     </div>
   </main>
-
-  <dialog id="settings">
-    <form method="dialog" id="settings-form">
-      <h2>Settings</h2>
-      <label>Garmin token
-        <input type="password" id="token" autocomplete="off" spellcheck="false" placeholder="Paste your token" required>
-      </label>
-      <p class="hint">Saved only in this browser (localStorage) and sent only to Garmin, or to your relay if you set one.</p>
-      <label>API relay URL <span class="muted">(optional)</span>
-        <input type="url" id="relay" placeholder="https://garmin-proxy.you.workers.dev">
-      </label>
-      <p class="hint">Leave empty to call Garmin directly. If the browser blocks that (CORS), deploy the Cloudflare Worker in <code>worker/</code> and paste its URL here.</p>
-      <div class="dialog-actions">
-        <button type="button" id="forget" class="ghost">Forget token</button>
-        <button value="cancel" class="ghost" formnovalidate>Cancel</button>
-        <button value="save" id="save">Save &amp; load</button>
-      </div>
-    </form>
-  </dialog>
 
   <script type="module" src="app.js"></script>
 </body>
